@@ -5,4 +5,6 @@ This repo contains EVERYTHING surrounding my Master Thesis at the University Sal
 # Goals
 - Use existing Despeckling DL models to improve Sentinel-1 images to achieve better performance for dwelling detection
 
+This is a test to edit readmy from GitKraken on Uni PC. 
+
 
