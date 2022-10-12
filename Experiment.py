@@ -123,10 +123,11 @@ def get_patchsize(patchsize, backnet):
         return 48
 
 
-def main_sync_sar(args):
+def main_sar(args):
     exp_basedir = args.exp_basedir % args.backnet if '%d' in args.exp_basedir else args.exp_basedir
     patchsize = get_patchsize(args.patchsize, args.backnet)
 
+    '''
     if args.weights:
         from experiment_utility import load_checkpoint, test_list_weights
         from dataset.folders_data import list_test_10synt as listfile_test
@@ -138,7 +139,8 @@ def main_sync_sar(args):
         load_checkpoint(experiment, args.eval_epoch)
         outdir = os.path.join(experiment.expdir, "weights%03d" % args.eval_epoch)
         test_list_weights(experiment, outdir, listfile_test, pad=18)
-    elif args.eval:
+    '''
+    if args.eval:
         from experiment_utility import load_checkpoint, test_list
         from dataset.folders_data import list_test_10synt as listfile_test
 
@@ -150,9 +152,8 @@ def main_sync_sar(args):
         test_list(experiment, outdir, listfile_test, pad=18)
     else:
         from experiment_utility import trainloop
-        from dataloaders import create_train_syncsar_dataloaders as create_train_dataloaders
-        from dataloaders import create_valid_syncsar_dataloaders as create_valid_dataloaders
-        from dataloaders import PreprocessingIntNoisyFromAmp as Preprocessing
+        from dataloader import create_train_realsar_dataloaders as create_train_dataloaders
+        from dataloader import create_valid_realsar_dataloaders as create_valid_dataloaders
 
         experiment = Experiment(exp_basedir, args.exp_name)
         experiment.setup(args, use_gpu=args.use_gpu)
@@ -201,8 +202,8 @@ if __name__ == '__main__':
     utils.add_commandline_flag(parser, "--use_gpu", "--use_cpu", True)
     parser.add_argument("--exp_name", default=None)
 
-    base_expdir = "./results/sar_sync/nlmcnn_%d/"
+    base_expdir = "./results/nlmcnn_%d/"
     parser.add_argument("--exp_basedir", default=base_expdir)
     parser.add_argument("--trainsetiters", type=int, default=640)
     args = parser.parse_args()
-    main_sync_sar(args)
+    main_sar(args)
