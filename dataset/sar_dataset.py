@@ -3,7 +3,6 @@ Copyright (c) 2020 Image Processing Research Group of University Federico II of 
 All rights reserved. This work should only be used for nonprofit purposes.
 
 """
-
 import os
 import torch
 import numpy as np
@@ -21,7 +20,7 @@ def image_filter(filename):
     filename_lower = filename.lower()
     return any(filename_lower.endswith(ext) for ext in IMG_EXTENSIONS)
 
-#keep
+# not used right now
 def sar_loader(path):
     import h5py
     with h5py.File(path, 'r') as fid:
@@ -29,111 +28,17 @@ def sar_loader(path):
     assert (data.shape[0] == 3)
     return data
 
-#keep
+#keep, use for tiff files
 def pil_loader(path):
     with open(path, 'rb') as f:
         img = Image.open(f)
         img.load()
     return img
 
-# lose
-#class ToGrayscale(object):
-#    def __call__(self, img):
-#        return img.convert('L', (0.2989, 0.5870, 0.1140, 0))
-
-#lose
-#class AddBayes(object):
-#    def __call__(self, img):
-#        return img + 1.0 / 255.0
-
-#lose
-#class PilToGrayTensor(object):
-#    def __init__(self, bayes=0.0, scale=256.0):
-#        self.bayes = bayes
-#        self.scale = scale
-
-    # def __call__(self, pic):
-    #     if (pic.mode != 'L'):
-    #         pic = pic.convert('L', (0.2989, 0.5870, 0.1140, 0))
-    #     assert (pic.mode == 'L')
-    #     nchannel = 1
-    #     img = torch.ByteTensor(torch.ByteStorage.from_buffer(pic.tobytes()))
-    #     img = img.view(pic.size[1], pic.size[0], nchannel)
-    #     img = img.transpose(0, 1).transpose(0, 2).contiguous()
-    #     return img.float().add(self.bayes).div(self.scale)
-
-    # def __repr__(self):
-    #     return self.__class__.__name__ + '(bayes={0},scale={1})'.format(self.bayes, self.scale)
-
-#lose
-# class Amp2Int(object):
-#     def __call__(self, x):
-#         return x ** 2
-
 # keep
 class NumpyToTensor(object):
     def __call__(self, x):
         return torch.from_numpy(x.copy(order='C'))
-
-# lose 
-# class CenterCropPil(object):
-#     def __init__(self, size):
-#         self.size = size
-
-#     def __call__(self, img):
-#         y1 = (img.size[1] - self.size) // 2
-#         x1 = (img.size[0] - self.size) // 2
-#         y2 = y1 + self.size
-#         x2 = x1 + self.size
-#         return img.crop((x1, y1, x2, y2))  # (left, upper, right, lower)-tuple.
-
-#     def __repr__(self):
-#         return self.__class__.__name__ + '(size={0})'.format(self.size)
-
-
-# lose
-# class RandomCropPil(object):
-#     def __init__(self, size):
-#         self.size = size
-
-#     def __call__(self, img):
-#         y1 = np.random.randint(0, img.size[1] - self.size)
-#         x1 = np.random.randint(0, img.size[0] - self.size)
-#         y2 = y1 + self.size
-#         x2 = x1 + self.size
-#         return img.crop((x1, y1, x2, y2))  # (left, upper, right, lower)-tuple.
-
-#     def __repr__(self):
-#         return self.__class__.__name__ + '(size={0})'.format(self.size)
-
-# lose
-# class Random8OrientationPil(object):
-#     def __call__(self, img):
-#         PIL_FLIPS = (None, Image.ROTATE_90, Image.ROTATE_180, Image.ROTATE_270,
-#                      Image.FLIP_LEFT_RIGHT, Image.TRANSPOSE, Image.FLIP_TOP_BOTTOM, Image.TRANSVERSE)
-#         ind = np.random.randint(0, 8)
-#         if ind > 0:
-#             img_out = img.transpose(PIL_FLIPS[ind])
-#         else:
-#             img_out = img.copy()
-#         return img_out
-
-# lose
-# class RandomOrientation90Pil(object):
-#     def __call__(self, img):
-#         import numpy as np
-#         degrees = 90 * np.random.randint(0, 4)
-#         img.rotate(degrees)
-#         return img
-
-
-# lose
-# class RandomOrientation90(object):
-#     def __call__(self, img):
-#         import numpy as np
-#         degrees = 90 * np.random.randint(0, 4)
-#         img.rotate(degrees)
-#         return img
 
 # keep
 class CenterCropNy(object):

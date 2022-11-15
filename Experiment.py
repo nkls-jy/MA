@@ -5,8 +5,10 @@ All rights reserved. This work should only be used for nonprofit purposes.
 """
 
 import os
+
 import tensorboardX as tbx
 import torch
+
 import models.NlmCNN as NlmCNN
 
 
@@ -25,7 +27,7 @@ class Experiment:
         type = self.args.backnet
         sizearea = self.args.sizearea
         print(type, sizearea, n3block_opt)
-        network_weights = NlmCNN.make_backnet(1, type=type, sizearea=sizearea, bn_momentum=0.1, n3block_opt=n3block_opt,
+        network_weights = NlmCNN.make_backnet(1, sizearea=sizearea, bn_momentum=0.1, n3block_opt=n3block_opt,
                                               padding=False)
         net = NlmCNN.NlmCNN(network_weights, sizearea=sizearea, sar_data=True, padding=False)
         return net
@@ -141,8 +143,8 @@ def main_sar(args):
         test_list_weights(experiment, outdir, listfile_test, pad=18)
     '''
     if args.eval:
-        from experiment_utility import load_checkpoint, test_list
         from dataset.folders_data import list_test_10synt as listfile_test
+        from experiment_utility import load_checkpoint, test_list
 
         assert (args.exp_name is not None)
         experiment = Experiment(exp_basedir, args.exp_name)
@@ -151,10 +153,12 @@ def main_sar(args):
         outdir = os.path.join(experiment.expdir, "results%03d" % args.eval_epoch)
         test_list(experiment, outdir, listfile_test, pad=18)
     else:
-        from experiment_utility import trainloop
-        from dataloader import create_train_realsar_dataloaders as create_train_dataloaders
-        from dataloader import create_valid_realsar_dataloaders as create_valid_dataloaders
-        from dataloader import PreprocessingIntNoisyFromAmp as Preprocessing    
+        from dataloader import PreprocessingIntNoisyFromAmp as Preprocessing
+        from dataloader import \
+            create_train_realsar_dataloaders as create_train_dataloaders
+        from dataloader import \
+            create_valid_realsar_dataloaders as create_valid_dataloaders
+        from experiment_utility import trainloop    
 
         experiment = Experiment(exp_basedir, args.exp_name)
         experiment.setup(args, use_gpu=args.use_gpu)
@@ -166,9 +170,11 @@ def main_sar(args):
 if __name__ == '__main__':
     import argparse
     import os
-    from utils import utils
+
     import torch
+
     from n3net.n3block import add_commandline_n3params
+    from utils import utils
 
     parser = argparse.ArgumentParser(description='NLMCNN for SAR image denoising')
     parser.add_argument("--backnet", type=int, default=2)

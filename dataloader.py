@@ -3,7 +3,7 @@ from dataset import sar_dataset
 from torchvision.transforms import Compose
 
 # maybe not needed?
-scale_img = 255.0
+#scale_img = 255.0
 
 # paths
 dir_path = "T:\\Jaggy\\Masterarbeit\\DataPreparation\\valid\\"
@@ -49,16 +49,10 @@ class PreprocessingIntNoisyFromAmp:
         noisy = target * noise
         return noisy, target, mask
 
-
+'''
 if __name__ == '__main__':
-    data_iterator = create_valid_realsar_dataloaders(256, 8)
+    #data_iterator = create_valid_realsar_dataloaders(256, 8)
     data_iterator = create_train_realsar_dataloaders(256, 32, 1)
-    #data_preprocessing = PreprocessingRealInt(); flag_log = False
-
-    #data_iterator = create_valid_syncsar_dataloaders(256, 16)
-    #data_iterator = create_train_syncsar_dataloaders(256, 100, 1)
-    #data_preprocessing = PreprocessingLogNoisyFromAmp(); flag_log = True
-    data_preprocessing = PreprocessingIntNoisyFromAmp(); flag_log = False
 
     import matplotlib.pyplot as plt
     for index, patch in enumerate(data_iterator):
@@ -75,3 +69,4 @@ if __name__ == '__main__':
         plt.subplot(1,3,2); plt.imshow(target[0,0], clim=[0, 1],cmap='gray')
         plt.subplot(1,3,3); plt.imshow(mask[0,0]  , clim=[0, 1], cmap='gray')
         plt.show()
+'''
