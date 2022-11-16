@@ -60,7 +60,7 @@ def set_random_seeds(seed):
     import random
     random.seed(seed)
 
-
+# 1 training epoch
 def train_epoch(experiment, trainloader, data_preprocessing, log_data):
     lr = experiment.base_lr * experiment.learning_rate_decay(experiment.epoch)
     if lr == 0:
@@ -69,6 +69,7 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
         group['lr'] = lr
     print('\nEpoch: %d, Learning rate: %f, Expdir %s' % (experiment.epoch, lr, experiment.expname))
 
+    # sets model into training mode
     experiment.net.train()
 
     stats_num = {"loss": 0, "mse": 0, "psnr": 0, "ssim": 0}
@@ -76,9 +77,13 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
 
     for inputs in tqdm(trainloader):
         if experiment.use_cuda:
+            # transfers inputs from tensor to GPU
             inputs = inputs.cuda()
+        
+        # sets all gradients of all tensors to zero
         experiment.optimizer.zero_grad()
 
+        # 
         if log_data:
             noisy_log, target_log, mask = data_preprocessing(inputs)
             noisy = experiment.preprocessing_log2net(noisy_log)
@@ -94,10 +99,13 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
             del noisy_int
             del target_int
 
+        # model prediction
         pred = experiment.net(noisy)
 
+        # padding handling?
         pad_row = (target.shape[2] - pred.shape[2]) // 2
         pad_col = (target.shape[3] - pred.shape[3]) // 2
+        # account for even or uneven row/column sizes?
         if pad_row > 0:
             target = target[:, :, pad_row: -pad_row, :]
             target_amp = target_amp[:, :, pad_row: -pad_row, :]
@@ -107,8 +115,11 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
             target_amp = target_amp[:, :, :, pad_col: -pad_col]  # .contiguous()
             mask = mask[:, :, :, pad_col: -pad_col].contiguous()
 
+        # calcualte loss
         loss = experiment.criterion(pred, target, mask).mean()
 
+        # creates a loop where every tensor has requires_grad = False
+        # any tensor with gradient currently attached with current computational graph is not detached from graph
         with torch.no_grad():
             pred_amp = experiment.postprocessing_net2amp(pred.detach())
 
@@ -118,13 +129,16 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
             stats_one["mse"] = metrics.metric_mse_mask(pred_amp, target_amp, mask, size_average=True).data
             stats_one["ssim"] = metrics.metric_ssim_mask(pred_amp, target_amp, mask, size_average=True).data
 
+        # backpropagate loss
         loss.backward()
         del loss
         del pred
         del pred_amp
 
+        # update weights
         experiment.optimizer.step()
-
+        
+        # update stats
         for stats_key in stats_cum:
             stats_cum[stats_key] = stats_cum[stats_key] + stats_one[stats_key]
             stats_num[stats_key] = stats_num[stats_key] + 1

@@ -31,8 +31,9 @@ def sar_loader(path):
 #keep, use for tiff files
 def pil_loader(path):
     with open(path, 'rb') as f:
-        img = Image.open(f)
-        img.load()
+        img = np.asarray(Image.open(f))
+        #img = np.array(img.load())
+        print(img.shape)
     return img
 
 # keep
@@ -61,8 +62,16 @@ class RandomCropNy(object):
         self.size = size
 
     def __call__(self, img):
+        print(f'img shape: {img.shape}')
+        # original
+        #y1 = np.random.randint(0, img.shape[1] - self.size)
+        #x1 = np.random.randint(0, img.shape[2] - self.size)
+        
+        # test
+        print(f'img shape[1]: {img.shape[1]}, self.size: {self.size}')
         y1 = np.random.randint(0, img.shape[1] - self.size)
         x1 = np.random.randint(0, img.shape[2] - self.size)
+        
         y2 = y1 + self.size
         x2 = x1 + self.size
         return img[:, y1:y2, x1:x2]
@@ -90,6 +99,7 @@ def find_files(dir, filter=None):
     if filter is None:
         filter = lambda x: True
 
+    #print(dir)
     for fname in sorted(os.listdir(dir)):
         if filter(fname):
             images.append(os.path.join(dir, fname))
@@ -111,6 +121,7 @@ class PlainImageFolder(Dataset):
                 imgs.extend(find_files(r, filter=filter))
         else:
             imgs = find_files(dirs, filter=filter)
+            print(imgs)
 
         if len(imgs) == 0:
             raise (RuntimeError("Found 0 images in subfolders of: " + dirs))
@@ -145,7 +156,10 @@ class PlainImageFolder(Dataset):
 # keep
 class PlainSarFolder(PlainImageFolder):
     def __init__(self, dirs, transform=None, cache=False):
-        PlainImageFolder.__init__(self, dirs, transform=transform, cache=cache, loader=sar_loader, filter=sar_filter)
+        # testing
+        PlainImageFolder.__init__(self, dirs, transform=transform, cache=cache, loader=pil_loader, filter=image_filter)
+        # original
+        #PlainImageFolder.__init__(self, dirs, transform=transform, cache=cache, loader=sar_loader, filter=sar_filter)
 
 
 # check if necessary

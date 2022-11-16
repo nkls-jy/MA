@@ -7,8 +7,10 @@ Please see the file LICENSE.txt for the license governing this code.
 '''
 
 import math
+
 import torch.nn as nn
-from n3net import non_local
+
+import non_local
 
 def cnn_from_def(cnn_opt):
     kernel = cnn_opt.get("kernel", 3)
@@ -117,6 +119,7 @@ def add_commandline_n3params(parser, name, k=7, external_temp=True):
 
 if __name__ == '__main__':
     import argparse
+
     from utils.utils import args2obj
     parser = argparse.ArgumentParser(description='N3Block')
     add_commandline_n3params(parser, 'n3block')
