@@ -85,14 +85,14 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
 
         # 
         if log_data:
-            noisy_log, target_log, mask = data_preprocessing(inputs)
+            noisy_log, target_log = data_preprocessing(inputs)
             noisy = experiment.preprocessing_log2net(noisy_log)
             target = experiment.preprocessing_log2net(target_log)
             target_amp = target_log.exp()
             del noisy_log
             del target_log
         else:
-            noisy_int, target_int, mask = data_preprocessing(inputs)
+            noisy_int, target_int = data_preprocessing(inputs)
             noisy = experiment.preprocessing_int2net(noisy_int)
             target = experiment.preprocessing_int2net(target_int)
             target_amp = target_int.abs().sqrt()
@@ -103,20 +103,18 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
         pred = experiment.net(noisy)
 
         # padding handling?
-        pad_row = (target.shape[2] - pred.shape[2]) // 2
-        pad_col = (target.shape[3] - pred.shape[3]) // 2
+        pad_row = (target.shape[1] - pred.shape[1]) // 2
+        pad_col = (target.shape[2] - pred.shape[2]) // 2
         # account for even or uneven row/column sizes?
         if pad_row > 0:
-            target = target[:, :, pad_row: -pad_row, :]
-            target_amp = target_amp[:, :, pad_row: -pad_row, :]
-            mask = mask[:, :, pad_row: -pad_row, :]
+            target = target[:, pad_row: -pad_row, :]
+            target_amp = target_amp[:, pad_row: -pad_row, :]
         if pad_col > 0:
-            target = target[:, :, :, pad_col: -pad_col]  # .contiguous()
-            target_amp = target_amp[:, :, :, pad_col: -pad_col]  # .contiguous()
-            mask = mask[:, :, :, pad_col: -pad_col].contiguous()
+            target = target[:, :, pad_col: -pad_col]  # .contiguous()
+            target_amp = target_amp[:, :, pad_col: -pad_col]  # .contiguous()
 
         # calcualte loss
-        loss = experiment.criterion(pred, target, mask).mean()
+        loss = experiment.criterion(pred, target).mean()
 
         # creates a loop where every tensor has requires_grad = False
         # any tensor with gradient currently attached with current computational graph is not detached from graph
@@ -125,9 +123,9 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
 
             stats_one = dict()
             stats_one["loss"] = loss.data
-            stats_one["psnr"] = metrics.metric_psnr_mask(pred_amp, target_amp, mask, maxval=1.0, size_average=True).data
-            stats_one["mse"] = metrics.metric_mse_mask(pred_amp, target_amp, mask, size_average=True).data
-            stats_one["ssim"] = metrics.metric_ssim_mask(pred_amp, target_amp, mask, size_average=True).data
+            stats_one["psnr"] = metrics.metric_psnr(pred_amp, target_amp, maxval=1.0, size_average=True).data
+            stats_one["mse"] = metrics.metric_mse(pred_amp, target_amp, size_average=True).data
+            stats_one["ssim"] = metrics.metric_ssim(pred_amp, target_amp, size_average=True).data
 
         # backpropagate loss
         loss.backward()
@@ -186,18 +184,16 @@ def test_epoch(experiment, testloader, data_preprocessing, log_data):
             target = torch.autograd.Variable(target, requires_grad=False)
             pred = experiment.net(noisy)
 
-            pad_row = (target.shape[2] - pred.shape[2]) // 2
-            pad_col = (target.shape[3] - pred.shape[3]) // 2
+            pad_row = (target.shape[1] - pred.shape[1]) // 2
+            pad_col = (target.shape[2] - pred.shape[2]) // 2
             if pad_row > 0:
-                target = target[:, :, pad_row: -pad_row, :]
-                target_amp = target_amp[:, :, pad_row: -pad_row, :]
-                mask = mask[:, :, pad_row:  -pad_row, :]
+                target = target[:, pad_row: -pad_row, :]
+                target_amp = target_amp[:, pad_row: -pad_row, :]
             if pad_col > 0:
-                target = target[:, :, :, pad_col: -pad_col].contiguous()
-                target_amp = target_amp[:, :, :, pad_col: -pad_col].contiguous()
-                mask = mask[:, :, :, pad_col: -pad_col].contiguous()
+                target = target[:, :, pad_col: -pad_col].contiguous()
+                target_amp = target_amp[:, :, pad_col: -pad_col].contiguous()
 
-            batch_loss = experiment.criterion(pred, target, mask)
+            batch_loss = experiment.criterion(pred, target)
 
             loss = batch_loss.mean()
             pred_amp = experiment.postprocessing_net2amp(pred)

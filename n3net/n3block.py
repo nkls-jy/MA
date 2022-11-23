@@ -10,7 +10,8 @@ import math
 
 import torch.nn as nn
 
-import non_local
+# 
+from . import non_local
 
 def cnn_from_def(cnn_opt):
     kernel = cnn_opt.get("kernel", 3)
@@ -117,6 +118,7 @@ def add_commandline_n3params(parser, name, k=7, external_temp=True):
     add_commandline_flag(parser, "--%s.nl_temp.avgpool"%name, "--%s.nl_temp.no_avgpool"%name, default=True) # in case of separate temperature CNN: whether to average pool temperature of each patch or to take temperature of center pixel
 
 
+'''
 if __name__ == '__main__':
     import argparse
 
@@ -127,3 +129,4 @@ if __name__ == '__main__':
     args = args2obj(args)
     print(args.n3block)
     N3Block(8, 8, **args.n3block)
+'''

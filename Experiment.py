@@ -53,12 +53,9 @@ class Experiment:
     
     # loss
     def create_loss(self):
-        def criterion(pred, targets, mask):
+        def criterion(pred, targets):
             loss = ((pred + targets) / 2.0).abs().log() - (pred.abs().log() + targets.abs().log()) / 2  # glrt
             loss = loss.view(pred.shape[0], -1)
-
-            mask = mask.view(pred.shape[0], -1)
-            loss = (mask * loss).sum(dim=1)
 
             return loss
 
@@ -174,7 +171,7 @@ def main_sar(args):
         outdir = os.path.join(experiment.expdir, "results%03d" % args.eval_epoch)
         test_list(experiment, outdir, listfile_test, pad=18)
     else:
-        from dataloader import PreprocessingIntNoisyFromAmp as Preprocessing
+        from dataloader import PreprocessingBatch as Preprocessing
         from dataloader import create_train_realsar_dataloaders as create_train_dataloaders
         from dataloader import create_valid_realsar_dataloaders as create_valid_dataloaders
         from experiment_utility import trainloop    
@@ -234,7 +231,8 @@ if __name__ == '__main__':
     utils.add_commandline_flag(parser, "--use_gpu", "--use_cpu", True)
     parser.add_argument("--exp_name", default=None)
 
-    base_expdir = "./results/nlmcnn_%d/"
+    base_expdir = ".\\sets\\train_bands\\"
+    #base_expdir = "./results/nlmcnn_%d/"
     parser.add_argument("--exp_basedir", default=base_expdir)
     parser.add_argument("--trainsetiters", type=int, default=640)
     args = parser.parse_args()

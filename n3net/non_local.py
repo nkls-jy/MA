@@ -12,7 +12,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
-import ops
+from . import ops
 #from . import ops
 
 #from n3net import ops

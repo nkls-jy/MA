@@ -8,6 +8,7 @@ import torch
 import numpy as np
 from PIL import Image
 from torch.utils.data import Dataset
+from osgeo import gdal
 
 # keep
 def sar_filter(filename):
@@ -28,13 +29,19 @@ def sar_loader(path):
     assert (data.shape[0] == 3)
     return data
 
-#keep, use for tiff files
-def pil_loader(path):
-    with open(path, 'rb') as f:
-        img = np.asarray(Image.open(f))
-        #img = np.array(img.load())
-        print(img.shape)
-    return img
+#only for single band images
+#def pil_loader(path):
+#    with open(path, 'rb') as f:
+#        img = np.asarray(Image.open(f))
+#        #img = np.array(img.load())
+#        print(img.shape)
+#    return img
+
+# image loader for 2-band tiffs
+def img_loader(path):
+    img = gdal.Open(path)
+    arr = np.array(img.ReadAsArray())
+    return arr
 
 # keep
 class NumpyToTensor(object):
@@ -62,18 +69,16 @@ class RandomCropNy(object):
         self.size = size
 
     def __call__(self, img):
-        print(f'img shape: {img.shape}')
-        # original
-        #y1 = np.random.randint(0, img.shape[1] - self.size)
-        #x1 = np.random.randint(0, img.shape[2] - self.size)
-        
-        # test
-        print(f'img shape[1]: {img.shape[1]}, self.size: {self.size}')
+        #print(f'img shape: {img.shape}')
+
+        # create random origina crop values
         y1 = np.random.randint(0, img.shape[1] - self.size)
         x1 = np.random.randint(0, img.shape[2] - self.size)
-        
+      
         y2 = y1 + self.size
         x2 = x1 + self.size
+        
+        # return cropped images
         return img[:, y1:y2, x1:x2]
 
     def __repr__(self):
@@ -87,9 +92,11 @@ class Random8OrientationNy(object):
     def __call__(self, img):
         k = img.shape[0]
         rot = np.random.randint(0, 8)
+
+        # rotate along y and x axis
         img = np.rot90(img, axes=(1, 2), k=rot)
         if rot > 3:
-            img = img[:, ::-1, :]
+            img = img[:, ::-1]
         assert (img.shape[0] == k)
         return img
 
@@ -112,7 +119,7 @@ class PlainImageFolder(Dataset):
     Adapted from torchvision.datasets.folder.ImageFolder
     """
 
-    def __init__(self, dirs, transform=None, cache=False, loader=pil_loader, filter=image_filter):
+    def __init__(self, dirs, transform=None, cache=False, loader=img_loader, filter=image_filter):
         self.cache = cache
         self.img_cache = {}
         if isinstance(dirs, list):
@@ -157,7 +164,7 @@ class PlainImageFolder(Dataset):
 class PlainSarFolder(PlainImageFolder):
     def __init__(self, dirs, transform=None, cache=False):
         # testing
-        PlainImageFolder.__init__(self, dirs, transform=transform, cache=cache, loader=pil_loader, filter=image_filter)
+        PlainImageFolder.__init__(self, dirs, transform=transform, cache=cache, loader=img_loader, filter=image_filter)
         # original
         #PlainImageFolder.__init__(self, dirs, transform=transform, cache=cache, loader=sar_loader, filter=sar_filter)
 
