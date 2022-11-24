@@ -13,9 +13,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 from . import ops
-#from . import ops
-
-#from n3net import ops
 
 r"""
 Shape parameters: B -> batch size, N -> number of database items

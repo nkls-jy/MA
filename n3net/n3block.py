@@ -10,7 +10,6 @@ import math
 
 import torch.nn as nn
 
-# 
 from . import non_local
 
 def cnn_from_def(cnn_opt):

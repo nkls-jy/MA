@@ -153,7 +153,9 @@ def main_sar(args):
         listfile_test = [x for x in listfile_test if x[0][-3:] == '_04']
 
         assert (args.exp_name is not None)
+        # create Experiment instance
         experiment = Experiment(exp_basedir, args.exp_name)
+        # setup Experiment (summaryWriter, model, loss function, optimizer, ...)
         experiment.setup(use_gpu=args.use_gpu)
         load_checkpoint(experiment, args.eval_epoch)
         outdir = os.path.join(experiment.expdir, "weights%03d" % args.eval_epoch)
@@ -178,7 +180,7 @@ def main_sar(args):
 
         # initialize experiment object
         experiment = Experiment(exp_basedir, args.exp_name)
-        # setup model
+        # setup Experiment (summaryWriter, model, loss function, optimizer, ...)
         experiment.setup(args, use_gpu=args.use_gpu)
         # load training data
         trainloader = create_train_dataloaders(patchsize, args.batchsize, args.trainsetiters)

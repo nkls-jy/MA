@@ -46,8 +46,14 @@ class PreprocessingBatch:
     def __call__(self, batch):
         print(f'preprocessing input: {batch.shape}')
         
-        noisy = images[:, 0, :, :]
-        target = images[:, 1, :, :]
+        tl = torch.split(batch, 1, dim=1)
+        noisy = tl[0]
+        target = tl[1]
+
+        print(f'noisy shape: {noisy.shape}')
+        print(f'taget shape: {target.shape}')
+        #noisy = images[:, :0, :, :]
+        #target = images[:, 1:, :, :]
         
         if batch.is_cuda:
             noisy = noisy.cuda()
@@ -66,17 +72,15 @@ if __name__ == '__main__':
     import numpy as np
     import torchvision.transforms.functional as F
 
-    
-
     data_iter = iter(data_loader)
     images = data_iter.next()
 
     noisy, target = data_preprocessing(images)
 
-    #noise = images[:, 0, :, :]
     print(noisy.shape)
     print(type(noisy))
 
+    
     '''
     noise_list = images[:, 0, :, :].tolist()
     target_list = images[:, 1, :, :].tolist()

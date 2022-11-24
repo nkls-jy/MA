@@ -10,6 +10,7 @@ import dataloader as dl
 
 #train_path = ".\\sets\\train_bands\\tile0.tiff"
 #train_path = r'.\sets\train_bands\tile0.tiff'
+'''
 train_path = r"T:\Jaggy\Masterarbeit\MA\sets\train_bands\tile1.tif"
 
 #load image
@@ -41,7 +42,7 @@ print(target.shape)
 
 #noisy = arr[0]
 #target = arr[1]
-
+'''
 '''
 path = r"T:\Jaggy\Masterarbeit\MA\sets\train_bands\\"
 fig = plt.figure(figsize=(8,8))
@@ -107,4 +108,26 @@ def find_files(dir, filter=None):
     return images
 find_files(train_path, image_filter)
 '''
+
+# Tensor Slicing Testing
+
+ 
+# create an 3 D tensor with 8 elements each
+a = torch.tensor([[[1, 2, 3, 4, 5, 6, 7, 8],
+                   [10, 11, 12, 13, 14, 15, 16, 17]],
+                    
+                  [[71, 72, 73, 74, 75, 76, 77, 78],
+                   [81, 82, 83, 84, 85, 86, 87, 88]]])
+  
+# display actual  tensor
+#print(a)
+print(a.shape)
+#print(torch.split(a, 1, dim=0))
+tensorList = torch.split(a, 1, dim=0)
+t1 = tensorList[0]
+t2 = tensorList[1]
+
+print(f't1: {t1}')
+print(f't1 shape: {t1.shape}')
+print(f't2: {t2}')
 
