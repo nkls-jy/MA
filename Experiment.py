@@ -239,3 +239,5 @@ if __name__ == '__main__':
     parser.add_argument("--trainsetiters", type=int, default=640)
     args = parser.parse_args()
     main_sar(args)
+
+# test test test
