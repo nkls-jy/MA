@@ -152,7 +152,7 @@ def main_sar(args):
     # if weights are available
     if args.weights:
         from experiment_utility import load_checkpoint, test_list_weights
-        from dataset.folders_data import list_test_10synt as listfile_test
+        #from dataset.folders_data import list_test_10synt as listfile_test
         listfile_test = [x for x in listfile_test if x[0][-3:] == '_04']
 
         assert (args.exp_name is not None)
