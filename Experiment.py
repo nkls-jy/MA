@@ -39,6 +39,9 @@ class Experiment:
         return net
 
     # used in experiment_utility
+    def preprocessing_log2net(self, img):
+        return img
+    # used in experiment_utility
     def preprocessing_int2net(self, img):
         return img
     # used in experiment_utility
@@ -163,7 +166,7 @@ def main_sar(args):
     
     # if evaluation modus
     if args.eval:
-        from dataset.folders_data import list_test_10synt as listfile_test
+        #from dataset.folders_data import list_test_10synt as listfile_test
         from experiment_utility import load_checkpoint, test_list
 
         assert (args.exp_name is not None)
@@ -173,7 +176,7 @@ def main_sar(args):
         outdir = os.path.join(experiment.expdir, "results%03d" % args.eval_epoch)
         test_list(experiment, outdir, listfile_test, pad=18)
     else:
-        from dataloader import PreprocessingBatch as Preprocessing
+        from dataloader import PreprocessingIntNoiseToLogBatch as Preprocessing
         from dataloader import create_train_realsar_dataloaders as create_train_dataloaders
         from dataloader import create_valid_realsar_dataloaders as create_valid_dataloaders
         from experiment_utility import trainloop    
@@ -187,7 +190,7 @@ def main_sar(args):
         # load validation data
         validloader = create_valid_dataloaders(args.patchsizevalid, args.batchsizevalid)
         # start training (in experiment_utilities)
-        trainloop(experiment, trainloader, Preprocessing(), log_data=False, validloader=validloader)
+        trainloop(experiment, trainloader, Preprocessing(), log_data=True, validloader=validloader)
 
 
 if __name__ == '__main__':
@@ -225,7 +228,7 @@ if __name__ == '__main__':
 
     # Training options
     parser.add_argument("--batchsize", type=int, default=32)
-    parser.add_argument("--patchsize", type=int, default=-1)
+    parser.add_argument("--patchsize", type=int, default=104)
     parser.add_argument("--batchsizevalid", type=int, default=8)
     parser.add_argument("--patchsizevalid", type=int, default=256)
 

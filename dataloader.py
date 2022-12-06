@@ -10,7 +10,7 @@ import torchvision
 #train_path = ".\\sets\\train\\"
 #valid_path = ".\\sets\\valid\\"
 
-train_path = ".\\sets\\train_bands\\"
+train_path = ".\\sets\\train\\"
 
 
 def create_train_realsar_dataloaders(patchsize, batchsize, trainsetiters):
@@ -38,16 +38,21 @@ def create_valid_realsar_dataloaders(patchsize, batchsize):
 
     return validloader
 
-class PreprocessingBatch:
+class PreprocessingIntNoiseToLogBatch:
     def __init__(self):
         from torch.distributions.gamma import Gamma
-        self.gen_dist = Gamma(torch.tensor([1.0]), torch.tensor([1.0]))
+        #self.gen_dist = Gamma(torch.tensor([1.0]), torch.tensor([1.0]))
         self.flag_bayes = False # testing, usually taken from args, flag_bayes
     def __call__(self, batch):
         print(f'preprocessing input: {batch.shape}')
         
         tl = torch.split(batch, 1, dim=1)
-        noisy = tl[0]
+        noisy_int = tl[0]
+        target_int = tl[1]
+
+        # convert noisy amplitude to log
+        noisy = noisy_int.log()
+        target = target_int.log()
         target = tl[1]
 
         print(f'noisy shape: {noisy.shape}')
@@ -64,8 +69,8 @@ class PreprocessingBatch:
 
 if __name__ == '__main__':
     #data_iterator = create_valid_realsar_dataloaders(256, 8)
-    data_loader = create_train_realsar_dataloaders(25, 5, 1)
-    data_preprocessing = PreprocessingBatch(); flag_log = False
+    data_loader = create_train_realsar_dataloaders(104, 5, 1)
+    data_preprocessing = PreprocessingIntNoiseToLogBatch(); flag_log = False
 
     import matplotlib.pyplot as plt
     from torchvision.utils import make_grid
@@ -80,12 +85,23 @@ if __name__ == '__main__':
     print(noisy.shape)
     print(type(noisy))
 
-    
-    '''
+    #cmb_list = noisy[0].tolist()
+    #cmb_list.append(target[0].tolist())
+
+    #print(len(cmb_list))
+   
     noise_list = images[:, 0, :, :].tolist()
     target_list = images[:, 1, :, :].tolist()
 
-    print(len(noise_list))
+    first_noise = images[4, 0, :, :].tolist()
+    first_target = images[4, 1, :, :].tolist()
+
+    cmb_list = []
+    cmb_list.append(first_noise)
+    cmb_list.append(first_target)
+
+    print(len(cmb_list))
+    #print(images[:, 0, :, :].shape)
 
     def show_images(images, cols = 1, titles = None):
         assert((titles is None)or (len(images) == len(titles)))
@@ -96,11 +112,14 @@ if __name__ == '__main__':
             a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
             #if image.ndim == 2:
             #   plt.gray()
+            #print(image)
+            #image = image[0, :,:]
             plt.imshow(image)
             a.set_title(title)
         fig.set_size_inches(np.array(fig.get_size_inches()) * n_images)
         plt.show()
 
-    show_images(noise_list)
-    '''
+    #show_images(noise_list)
+    show_images(cmb_list)
+    
     

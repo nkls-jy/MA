@@ -69,7 +69,7 @@ class RandomCropNy(object):
         self.size = size
 
     def __call__(self, img):
-        #print(f'img shape: {img.shape}')
+        print(f'img shape: {img.shape}')
 
         # create random origina crop values
         y1 = np.random.randint(0, img.shape[1] - self.size)
