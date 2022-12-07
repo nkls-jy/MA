@@ -146,12 +146,30 @@ class Experiment:
 
 def main_sar(args):
     exp_basedir = args.exp_basedir % args.backnet if '%d' in args.exp_basedir else args.exp_basedir
+    print(exp_basedir)
     #patchsize = get_patchsize(args.patchsize, args.backnet)
     patchsize = 104
     
+    from dataloader import PreprocessingIntNoiseToLogBatch as Preprocessing
+    from dataloader import create_train_realsar_dataloaders as create_train_dataloaders
+    from dataloader import create_valid_realsar_dataloaders as create_valid_dataloaders
+    from experiment_utility import trainloop    
+
+    # initialize experiment object
+    experiment = Experiment(exp_basedir, args.exp_name)
+    # setup Experiment (summaryWriter, model, loss function, optimizer, ...)
+    experiment.setup(args, use_gpu=args.use_gpu)
+    # load training data
+    trainloader = create_train_dataloaders(patchsize, args.batchsize, args.trainsetiters)
+    # load validation data
+    validloader = create_valid_dataloaders(args.patchsizevalid, args.batchsizevalid)
+    # start training (in experiment_utilities)
+    trainloop(experiment, trainloader, Preprocessing(), log_data=True, validloader=validloader)
+    
+    '''
     # if weights are available
     if args.weights:
-        '''
+        
         from experiment_utility import load_checkpoint, test_list_weights
         #from dataset.folders_data import list_test_10synt as listfile_test
         listfile_test = [x for x in listfile_test if x[0][-3:] == '_04']
@@ -164,10 +182,10 @@ def main_sar(args):
         load_checkpoint(experiment, args.eval_epoch)
         outdir = os.path.join(experiment.expdir, "weights%03d" % args.eval_epoch)
         test_list_weights(experiment, outdir, listfile_test, pad=18)
-        '''
+        
     # if evaluation modus
     if args.eval:
-        '''
+        
         #from dataset.folders_data import list_test_10synt as listfile_test
         from experiment_utility import load_checkpoint, test_list
 
@@ -177,7 +195,7 @@ def main_sar(args):
         load_checkpoint(experiment, args.eval_epoch)
         outdir = os.path.join(experiment.expdir, "results%03d" % args.eval_epoch)
         test_list(experiment, outdir, listfile_test, pad=18)
-        '''
+        
     else:
         from dataloader import PreprocessingIntNoiseToLogBatch as Preprocessing
         from dataloader import create_train_realsar_dataloaders as create_train_dataloaders
@@ -194,7 +212,7 @@ def main_sar(args):
         validloader = create_valid_dataloaders(args.patchsizevalid, args.batchsizevalid)
         # start training (in experiment_utilities)
         trainloop(experiment, trainloader, Preprocessing(), log_data=True, validloader=validloader)
-
+    '''
 
 if __name__ == '__main__':
     import argparse
@@ -239,7 +257,7 @@ if __name__ == '__main__':
     utils.add_commandline_flag(parser, "--use_gpu", "--use_cpu", True)
     parser.add_argument("--exp_name", default=None)
 
-    base_expdir = ".\\sets\\train_bands\\"
+    base_expdir = ".\\sets\\train\\"
     #base_expdir = "./results/nlmcnn_%d/"
     parser.add_argument("--exp_basedir", default=base_expdir)
     parser.add_argument("--trainsetiters", type=int, default=640)

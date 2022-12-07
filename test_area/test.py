@@ -1,12 +1,16 @@
 import os
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from osgeo import gdal
 import torch
 import sys
 sys.path.append('.')
 
 import dataloader as dl
+
+train_path = ".\\sets\\train\\"
+dataset = gdal.Open(train_path + "000000000023.tif")
+image = dataset.ReadAsArray()
 
 #train_path = ".\\sets\\train_bands\\tile0.tiff"
 #train_path = r'.\sets\train_bands\tile0.tiff'
@@ -71,8 +75,8 @@ for filename in os.listdir(path):
 
 
 
-#dataset = gdal.Open(train_path + "tile0.tif")
-#image = dataset.ReadAsArray()
+dataset = gdal.Open(train_path + "tile0.tif")
+image = dataset.ReadAsArray()
 
 # extract bands
 #noisy = image[0]
