@@ -151,6 +151,7 @@ def main_sar(args):
     
     # if weights are available
     if args.weights:
+        '''
         from experiment_utility import load_checkpoint, test_list_weights
         #from dataset.folders_data import list_test_10synt as listfile_test
         listfile_test = [x for x in listfile_test if x[0][-3:] == '_04']
@@ -163,9 +164,10 @@ def main_sar(args):
         load_checkpoint(experiment, args.eval_epoch)
         outdir = os.path.join(experiment.expdir, "weights%03d" % args.eval_epoch)
         test_list_weights(experiment, outdir, listfile_test, pad=18)
-    
+        '''
     # if evaluation modus
     if args.eval:
+        '''
         #from dataset.folders_data import list_test_10synt as listfile_test
         from experiment_utility import load_checkpoint, test_list
 
@@ -175,6 +177,7 @@ def main_sar(args):
         load_checkpoint(experiment, args.eval_epoch)
         outdir = os.path.join(experiment.expdir, "results%03d" % args.eval_epoch)
         test_list(experiment, outdir, listfile_test, pad=18)
+        '''
     else:
         from dataloader import PreprocessingIntNoiseToLogBatch as Preprocessing
         from dataloader import create_train_realsar_dataloaders as create_train_dataloaders
