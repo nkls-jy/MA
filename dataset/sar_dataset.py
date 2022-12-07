@@ -3,12 +3,13 @@ Copyright (c) 2020 Image Processing Research Group of University Federico II of 
 All rights reserved. This work should only be used for nonprofit purposes.
 
 """
+
 import os
 import torch
 import numpy as np
 from PIL import Image
 from torch.utils.data import Dataset
-from osgeo import gdal
+import rasterio
 
 # keep
 def sar_filter(filename):
@@ -39,9 +40,12 @@ def sar_loader(path):
 
 # image loader for 2-band tiffs
 def img_loader(path):
-    img = gdal.Open(path)
-    arr = np.array(img.ReadAsArray())
-    return arr
+    with rasterio.open(path) as f:
+        img = f.read()
+    #img = rasterio.open(path)
+    #arr = img.read()
+    #return arr
+    return img
 
 # keep
 class NumpyToTensor(object):

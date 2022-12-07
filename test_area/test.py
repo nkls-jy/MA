@@ -1,16 +1,19 @@
 import os
 import numpy as np
 #import matplotlib.pyplot as plt
-from osgeo import gdal
+import rasterio
 import torch
 import sys
 sys.path.append('.')
 
-import dataloader as dl
+#import dataloader as dl
 
 train_path = ".\\sets\\train\\"
-dataset = gdal.Open(train_path + "000000000023.tif")
-image = dataset.ReadAsArray()
+
+file = rasterio.open(train_path + "000000000023.tif")
+arr = file.read()
+print(arr.shape)
+print(type(arr))
 
 #train_path = ".\\sets\\train_bands\\tile0.tiff"
 #train_path = r'.\sets\train_bands\tile0.tiff'
@@ -115,8 +118,8 @@ find_files(train_path, image_filter)
 
 # Tensor Slicing Testing
 
- 
-# create an 3 D tensor with 8 elements each
+'''
+ # create an 3 D tensor with 8 elements each
 a = torch.tensor([[[1, 2, 3, 4, 5, 6, 7, 8],
                    [10, 11, 12, 13, 14, 15, 16, 17]],
                     
@@ -134,4 +137,4 @@ t2 = tensorList[1]
 print(f't1: {t1}')
 print(f't1 shape: {t1.shape}')
 print(f't2: {t2}')
-
+'''

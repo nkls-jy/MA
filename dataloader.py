@@ -93,8 +93,8 @@ if __name__ == '__main__':
     noise_list = images[:, 0, :, :].tolist()
     target_list = images[:, 1, :, :].tolist()
 
-    first_noise = images[4, 0, :, :].tolist()
-    first_target = images[4, 1, :, :].tolist()
+    first_noise = images[2, 0, :, :].tolist()
+    first_target = images[2, 1, :, :].tolist()
 
     cmb_list = []
     cmb_list.append(first_noise)
