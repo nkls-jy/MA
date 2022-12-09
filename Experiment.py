@@ -35,7 +35,7 @@ class Experiment:
         network_weights = NlmCNN.make_backnet(1, sizearea=sizearea, bn_momentum=0.1, n3block_opt=n3block_opt,
                                               padding=False)
         # initialize model
-        net = NlmCNN.N3BackNet(network_weights, sizearea=sizearea, sar_data=True, padding=False)
+        net = NlmCNN.N3BackNet(network_weights, sizearea=sizearea, n3block_opt=n3block_opt, padding=False)
         return net
 
     # used in experiment_utility
