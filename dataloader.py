@@ -10,8 +10,11 @@ import torchvision
 #train_path = ".\\sets\\train\\"
 #valid_path = ".\\sets\\valid\\"
 
-train_path = ".\\sets\\train\\"
+# train_path for home machine
+train_path =  "/home/niklas/Documents/test_data"
+valid_path = ""
 
+# train_path for uni machine
 
 def create_train_realsar_dataloaders(patchsize, batchsize, trainsetiters):
     transform_train = Compose([
@@ -44,7 +47,7 @@ class PreprocessingIntNoiseToLogBatch:
         #self.gen_dist = Gamma(torch.tensor([1.0]), torch.tensor([1.0]))
         self.flag_bayes = False # testing, usually taken from args, flag_bayes
     def __call__(self, batch):
-        print(f'preprocessing input: {batch.shape}')
+        #print(f'preprocessing input: {batch.shape}')
         
         tl = torch.split(batch, 1, dim=1)
         noisy_int = tl[0]
@@ -55,8 +58,8 @@ class PreprocessingIntNoiseToLogBatch:
         target = target_int.log()
         target = tl[1]
 
-        print(f'noisy shape: {noisy.shape}')
-        print(f'taget shape: {target.shape}')
+        #print(f'noisy shape: {noisy.shape}')
+        #print(f'taget shape: {target.shape}')
         #noisy = images[:, :0, :, :]
         #target = images[:, 1:, :, :]
         

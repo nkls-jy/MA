@@ -26,6 +26,9 @@ class Experiment:
         self.expdir = os.path.join(basedir, self.expname)
 
     def create_network(self):
+
+        print("---------- Network will be created now --------------")
+
         # get parameters for n³ block
         n3block_opt = dict(**self.args.n3block)
         # default size of areas to analyze (default=25)
@@ -34,8 +37,9 @@ class Experiment:
         # initialize network weights
         network_weights = NlmCNN.make_backnet(1, sizearea=sizearea, bn_momentum=0.1, n3block_opt=n3block_opt,
                                               padding=False)
+        #print(f"network_weights: {network_weights}")
         # initialize model
-        net = NlmCNN.N3BackNet(network_weights, sizearea=sizearea, n3block_opt=n3block_opt, padding=False)
+        net = NlmCNN.NlmCNN(network_weights, sizearea=sizearea, sar_data=True, padding=False)
         return net
 
     # used in experiment_utility
@@ -162,9 +166,10 @@ def main_sar(args):
     # load training data
     trainloader = create_train_dataloaders(patchsize, args.batchsize, args.trainsetiters)
     # load validation data
-    validloader = create_valid_dataloaders(args.patchsizevalid, args.batchsizevalid)
+    #validloader = create_valid_dataloaders(args.patchsizevalid, args.batchsizevalid)
     # start training (in experiment_utilities)
-    trainloop(experiment, trainloader, Preprocessing(), log_data=True, validloader=validloader)
+    trainloop(experiment, trainloader, Preprocessing(), log_data=True, validloader=None)
+    #trainloop(experiment, trainloader, Preprocessing(), log_data=True, validloader=validloader)
     
     '''
     # if weights are available
@@ -257,9 +262,12 @@ if __name__ == '__main__':
     utils.add_commandline_flag(parser, "--use_gpu", "--use_cpu", True)
     parser.add_argument("--exp_name", default=None)
 
-    base_expdir = "/home/niklas/Documents/cnnNLM_Experiment"
+    # base dir: home machine
+    base_expdir = "/home/niklas/Documents/experiment_runs"
+    #base dir: uni machine
+    #base_expdir = "/home/niklas/Documents/cnnNLM_Experiment"
+
     #base_expdir = ".\\sets\\train\\"
-    #base_expdir = "./results/nlmcnn_%d/"
     parser.add_argument("--exp_basedir", default=base_expdir)
     parser.add_argument("--trainsetiters", type=int, default=640)
     args = parser.parse_args()

@@ -1,6 +1,63 @@
 import torch.nn as nn
 from .DnCNN import make_net
 
+def mul_weights_patches(x, w, kernel, stride=1, padding=False):
+    if padding:
+        import torch.nn.functional as F
+        pad_row = -(x.shape[2] - kernel) % stride
+        pad_col = -(x.shape[3] - kernel) % stride
+        x = F.pad(x, (pad_col // 2, pad_col - pad_col // 2, pad_row // 2, pad_row - pad_row // 2))
+
+    # Extract patches
+    w = w.permute(0, 2, 3, 1)
+    w = w.view(w.shape[0], 1, w.shape[1], w.shape[2], kernel, kernel)
+    patches = x.unfold(2, kernel, stride).unfold(3, kernel, stride)
+
+    pad_row = (w.shape[2] - patches.shape[2])//2
+    pad_col = (w.shape[3] - patches.shape[3])//2
+    if (pad_row<0) or (pad_col<0):
+        patches = patches[:,:,max(-pad_row,0):(patches.shape[2] - max(-pad_row,0)), max(-pad_col,0):(patches.shape[3] - max(-pad_col,0)),:,:]
+    if (pad_row>0) or (pad_col>0):
+        w = w[:,:,max(pad_row,0):(w.shape[2] - max(pad_row,0)), max(pad_col,0):(w.shape[3] - max(pad_col,0)),:,:]
+
+    y = (patches * w).sum((4,5))
+
+    return y
+
+class NlmCNN(nn.Module):
+    r"""
+    Implements a DnCNN network
+    """
+    def __init__(self, network_weights, sizearea, sar_data = False, padding=False):
+        r"""
+        :param residual: whether to add a residual connection from input to output
+        :param padding: inteteger for padding
+        """
+        super(NlmCNN, self).__init__()
+
+        self.network_weights = network_weights
+        self.sizearea = sizearea
+        self.padding  = padding
+        self.sar_data = sar_data
+
+    def forward_weights(self, x, reshape=False):
+        if self.sar_data:
+            x_in = x.abs().log() / 2.0
+        else:
+            x_in = x
+        w = self.network_weights(x_in)
+        if reshape:
+            w = w.permute(0, 2, 3, 1)
+            w = w.view(w.shape[0], w.shape[1], w.shape[2], self.sizearea, self.sizearea)
+            return w
+        else:
+            return w
+
+    def forward(self, x):
+        w = self.forward_weights(x)
+        y = mul_weights_patches(x, w, self.sizearea, stride=1, padding=self.padding)
+        return y
+
 # defining nonlocal means backnet with N³ blocks
 class N3BackNet(nn.Module):
 
