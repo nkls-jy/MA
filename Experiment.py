@@ -257,7 +257,8 @@ if __name__ == '__main__':
     utils.add_commandline_flag(parser, "--use_gpu", "--use_cpu", True)
     parser.add_argument("--exp_name", default=None)
 
-    base_expdir = ".\\sets\\train\\"
+    base_expdir = "/home/niklas/Documents/cnnNLM_Experiment"
+    #base_expdir = ".\\sets\\train\\"
     #base_expdir = "./results/nlmcnn_%d/"
     parser.add_argument("--exp_basedir", default=base_expdir)
     parser.add_argument("--trainsetiters", type=int, default=640)

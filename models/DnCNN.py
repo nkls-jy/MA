@@ -10,6 +10,8 @@ import torch.nn as nn
 
 
 def conv_with_padding(in_planes, out_planes, kernelsize, stride=1, dilation=1, bias=False, padding = None):
+    print(f"in_planes: {in_planes}\n out_planes: {out_planes}\n kernelsize: {kernelsize}\n stride: {stride}\n dilation: {dilation}\n bias: {bias}\n padding: {padding}\n")
+    print(f"input dimensions: {type(in_planes)}")
     if padding is None:
         padding = kernelsize//2
     return nn.Conv2d(in_planes, out_planes, kernel_size=kernelsize, stride=stride, dilation=dilation, padding=padding, bias=bias)
