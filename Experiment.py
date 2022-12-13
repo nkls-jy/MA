@@ -257,7 +257,7 @@ if __name__ == '__main__':
     parser.add_argument('--eval_epoch', type=int)
 
     # Training options
-    parser.add_argument("--batchsize", type=int, default=32)
+    parser.add_argument("--batchsize", type=int, default=32) #default=16) for home machine
     parser.add_argument("--patchsize", type=int, default=104)
     parser.add_argument("--batchsizevalid", type=int, default=8)
     parser.add_argument("--patchsizevalid", type=int, default=256)
