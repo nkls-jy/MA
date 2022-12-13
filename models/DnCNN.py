@@ -16,6 +16,7 @@ def conv_with_padding(in_planes, out_planes, kernelsize, stride=1, dilation=1, b
     #print(f"in_planes: {in_planes}")
     #print(f"in_planes: {in_planes}\n out_planes: {out_planes}\n kernelsize: {kernelsize}\n stride: {stride}\n dilation: {dilation}\n bias: {bias}\n padding: {padding}\n")
     #print(f"input dimensions: {type(in_planes)}")
+    print()
     return nn.Conv2d(in_planes, out_planes, kernel_size=kernelsize, stride=stride, dilation=dilation, padding=padding, bias=bias)
 
 def conv_init(conv, act='linear'):
@@ -43,7 +44,10 @@ def make_activation(act):
     elif act == 'leaky_relu':
         return nn.LeakyReLU(inplace=True)
     elif act == 'softmax':
-        return nn.Softmax()
+        # old:
+        #return nn.Softmax()
+        # new:
+        return nn.Softmax(dim=0)
     elif act == 'linear':
         return None
     else:
@@ -73,6 +77,7 @@ def make_net(nplanes_in, kernels, features, bns, acts, dilats, bn_momentum = 0.1
 
         elem = conv_with_padding(in_feats, features[i], kernelsize=kernels[i], dilation=dilats[i], padding=padding, bias=not(bns[i]))
         conv_init(elem, act=acts[i])
+
         layers.append(elem)
 
         if bns[i]:

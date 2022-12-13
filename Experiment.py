@@ -35,8 +35,12 @@ class Experiment:
         sizearea = self.args.sizearea
         print(sizearea, n3block_opt)
         # initialize network weights
-        network_weights = NlmCNN.make_backnet(1, sizearea=sizearea, bn_momentum=0.1, n3block_opt=n3block_opt,
-                                              padding=False)
+        network_weights = NlmCNN.make_backnet(1, 
+                                            sizearea=sizearea, 
+                                            bn_momentum=0.1, 
+                                            n3block_opt=n3block_opt,
+                                            padding = True)
+                                            #padding=False)
         #print(f"network_weights: {network_weights}")
         # initialize model
         net = NlmCNN.NlmCNN(network_weights, sizearea=sizearea, sar_data=True, padding=False)
@@ -263,8 +267,9 @@ if __name__ == '__main__':
     parser.add_argument("--exp_name", default=None)
 
     # base dir: home machine
-    base_expdir = "/home/niklas/Documents/experiment_runs"
+    #base_expdir = "/home/niklas/Documents/experiment_runs"
     #base dir: uni machine
+    base_expdir = "/home/niklas/Documents/cnnNLM_Experiment"
     #base_expdir = "/home/niklas/Documents/cnnNLM_Experiment"
 
     #base_expdir = ".\\sets\\train\\"
@@ -272,5 +277,3 @@ if __name__ == '__main__':
     parser.add_argument("--trainsetiters", type=int, default=640)
     args = parser.parse_args()
     main_sar(args)
-
-# test test test

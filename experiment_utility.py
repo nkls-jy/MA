@@ -102,18 +102,42 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
         # model prediction
         pred = experiment.net(noisy)
 
+        print(f"target shape[1]: {target.shape[1]}")
+        print(f"target shape[2]: {target.shape[2]}")
+        print(f"target shape[3]: {target.shape[3]}")
+
         # padding handling?
-        pad_row = (target.shape[1] - pred.shape[1]) // 2
-        pad_col = (target.shape[2] - pred.shape[2]) // 2
+        # old:        
+        #pad_row = (target.shape[1] - pred.shape[1]) // 2
+        #pad_col = (target.shape[2] - pred.shape[2]) // 2
+
+        # new:
+        pad_row = (target.shape[2] - pred.shape[2]) // 2
+        pad_col = (target.shape[3] - pred.shape[3]) // 2
+        print(f"pad_row new: {pad_row}")
+        print(f"pad_col new: {pad_col}")
+
         # account for even or uneven row/column sizes?
         if pad_row > 0:
-            target = target[:, pad_row: -pad_row, :]
-            target_amp = target_amp[:, pad_row: -pad_row, :]
+            # old:
+            #target = target[:, pad_row: -pad_row, :]
+            #target_amp = target_amp[:, pad_row: -pad_row, :]
+            # new:
+            target = target[:, :, pad_row: -pad_row, :]
+            target_amp = target_amp[:, :, pad_row: -pad_row, :]
         if pad_col > 0:
-            target = target[:, :, pad_col: -pad_col]  # .contiguous()
-            target_amp = target_amp[:, :, pad_col: -pad_col]  # .contiguous()
+            # old:
+            #target = target[:, :, pad_col: -pad_col]  # .contiguous()
+            #target_amp = target_amp[:, :, pad_col: -pad_col]  # .contiguous()
+            # new:
+            target = target[:, :, :, pad_col: -pad_col]
+            target_amp = target_amp[:, :, :, pad_col: -pad_col]
+        
+        print(f"target size: {target.size()}")
+        print(f"pred size: {pred.size()}")
 
-        # calcualte loss
+        # calculate loss
+        
         loss = experiment.criterion(pred, target).mean()
 
         # creates a loop where every tensor has requires_grad = False
@@ -126,7 +150,9 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
             stats_one["psnr"] = metrics.metric_psnr(pred_amp, target_amp, maxval=1.0, size_average=True).data
             stats_one["mse"] = metrics.metric_mse(pred_amp, target_amp, size_average=True).data
             stats_one["ssim"] = metrics.metric_ssim(pred_amp, target_amp, size_average=True).data
+        
 
+        
         # backpropagate loss
         loss.backward()
         del loss
