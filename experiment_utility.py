@@ -102,9 +102,9 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
         # model prediction
         pred = experiment.net(noisy)
 
-        print(f"target shape[1]: {target.shape[1]}")
-        print(f"target shape[2]: {target.shape[2]}")
-        print(f"target shape[3]: {target.shape[3]}")
+        #print(f"target shape[1]: {target.shape[1]}")
+        #print(f"target shape[2]: {target.shape[2]}")
+        #print(f"target shape[3]: {target.shape[3]}")
 
         # padding handling?
         # old:        
@@ -114,8 +114,8 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
         # new:
         pad_row = (target.shape[2] - pred.shape[2]) // 2
         pad_col = (target.shape[3] - pred.shape[3]) // 2
-        print(f"pad_row new: {pad_row}")
-        print(f"pad_col new: {pad_col}")
+        #print(f"pad_row new: {pad_row}")
+        #print(f"pad_col new: {pad_col}")
 
         # account for even or uneven row/column sizes?
         if pad_row > 0:
@@ -133,9 +133,10 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
             target = target[:, :, :, pad_col: -pad_col]
             target_amp = target_amp[:, :, :, pad_col: -pad_col]
         
-        print(f"target size: {target.size()}")
-        print(f"pred size: {pred.size()}")
+        #print(f"target size: {target.size()}")
+        #print(f"pred size: {pred.size()}")
 
+        #print(f"gradient of layer 0: {experiment.net[0].weight.grad}")
         # calculate loss
         
         loss = experiment.criterion(pred, target).mean()

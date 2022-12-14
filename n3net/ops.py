@@ -99,7 +99,8 @@ class IndexedMatmul2Efficient(torch.autograd.Function):
             If = I_chunk.view(b,1,this_chunk_size,o).expand(b,k,this_chunk_size,o)
             del I_chunk
             y_full = torch.cuda.FloatTensor(b,k,this_chunk_size,n).fill_(0)
-            y_full = y_full.scatter_add(source=y_chunk.permute(0,3,1,2), index=If, dim=3)
+            #y_full = y_full.scatter_add(source=y_chunk.permute(0,3,1,2), index=If, dim=3)
+            y_full = y_full.scatter_add(src=y_chunk.permute(0,3,1,2), index=If, dim=3)
             del y_chunk
 
             for i_k in range(k):

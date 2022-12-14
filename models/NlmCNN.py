@@ -117,20 +117,20 @@ class N3BackNet(nn.Module):
 
     # forward pass through network
     def forward(self, x):
-        print(f"as inpux: {x.size()}")
+        #print(f"as input: {x.size()}")
         x = self.shortcut(self.convs1(x), x)
-        print(f"after 1st conv block: {x.size()}")
+        #print(f"after 1st conv block: {x.size()}")
         x = self.n3block1(x, x)
-        print(f"after 1st n3block: {x.size()}")
+        #print(f"after 1st n3block: {x.size()}")
         x = self.shortcut(self.convs2(x), x)
-        print(f"after shortcut + 2nd conv block: {x.size()}")
+        #print(f"after shortcut + 2nd conv block: {x.size()}")
         x = self.n3block2(x, x)
-        print(f"after 2nd n3block: {x.size()}")
+        #print(f"after 2nd n3block: {x.size()}")
         #print(f"current x shape: {x.shape}")
         #print(f"self.convs3: {self.convs3}")
         x = self.convs3(x)
         #print(x)
-        print(f"after 3rd conv block + softmax: {x.size()}")
+        #print(f"after 3rd conv block + softmax: {x.size()}")
         return x
 
 def make_backnet(nplanes_in, sizearea, bn_momentum=0.1, n3block_opt={}, padding=False):

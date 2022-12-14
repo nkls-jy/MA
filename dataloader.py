@@ -27,7 +27,7 @@ def create_train_realsar_dataloaders(patchsize, batchsize, trainsetiters):
     trainset = sar_dataset.PlainSarFolder(dirs=train_path, transform=transform_train, cache=True)
     trainset = torch.utils.data.ConcatDataset([trainset]*trainsetiters)
     print(f'trainset length: {len(trainset)}')
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batchsize, shuffle=True, num_workers=1) # 1 just for testing, usually 20)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batchsize, shuffle=True, num_workers=20) # 1 just for testing, usually 20)
 
     return trainloader
 
