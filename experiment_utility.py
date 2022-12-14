@@ -137,8 +137,8 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
         #print(f"pred size: {pred.size()}")
 
         #print(f"gradient of layer 0: {experiment.net[0].weight.grad}")
-        # calculate loss
         
+        # calculate loss
         loss = experiment.criterion(pred, target).mean()
 
         # creates a loop where every tensor has requires_grad = False
