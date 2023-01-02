@@ -132,7 +132,7 @@ class PlainImageFolder(Dataset):
                 imgs.extend(find_files(r, filter=filter))
         else:
             imgs = find_files(dirs, filter=filter)
-            print(imgs)
+            #print(imgs)
 
         if len(imgs) == 0:
             raise (RuntimeError("Found 0 images in subfolders of: " + dirs))

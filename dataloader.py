@@ -15,7 +15,7 @@ import torchvision
 valid_path = ""
 
 # train_path for uni machine
-train_path = "/home/niklas/Documents/test_data"
+train_path = "/home/niklas/Documents/traindata_big"
 
 def create_train_realsar_dataloaders(patchsize, batchsize, trainsetiters):
     transform_train = Compose([

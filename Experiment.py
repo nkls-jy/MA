@@ -245,7 +245,7 @@ if __name__ == '__main__':
     parser.add_argument("--adam.beta2", type=float, default=0.999)
     parser.add_argument("--adam.eps", type=float, default=1e-8)
     parser.add_argument("--adam.weightdecay", type=float, default=1e-4)
-    parser.add_argument('--adam.lr', type=float, default=0.001)
+    parser.add_argument('--adam.lr', type=float, default=0.01) #default=0.001)
     # parameters for SGD
     parser.add_argument("--sgd.momentum", type=float, default=0.9)
     parser.add_argument("--sgd.weightdecay", type=float, default=1e-4)
@@ -274,6 +274,6 @@ if __name__ == '__main__':
 
     #base_expdir = ".\\sets\\train\\"
     parser.add_argument("--exp_basedir", default=base_expdir)
-    parser.add_argument("--trainsetiters", type=int, default=640)
+    parser.add_argument("--trainsetiters", type=int, default=100)# default=640)
     args = parser.parse_args()
     main_sar(args)
