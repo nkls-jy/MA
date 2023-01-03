@@ -158,23 +158,36 @@ def main_sar(args):
     #patchsize = get_patchsize(args.patchsize, args.backnet)
     patchsize = 104
     
-    from dataloader import PreprocessingIntNoiseToLogBatch as Preprocessing
-    from dataloader import create_train_realsar_dataloaders as create_train_dataloaders
-    from dataloader import create_valid_realsar_dataloaders as create_valid_dataloaders
-    from experiment_utility import trainloop    
+    if args.eval:
+        #from dataset.folders_data import list_test_10synt as listfile_test
+        from experiment_utility import load_checkpoint, test_list
+        from dataset.folders_data import list_testfiles
 
-    # initialize experiment object
-    experiment = Experiment(exp_basedir, args.exp_name)
-    # setup Experiment (summaryWriter, model, loss function, optimizer, ...)
-    experiment.setup(args, use_gpu=args.use_gpu)
-    # load training data
-    trainloader = create_train_dataloaders(patchsize, args.batchsize, args.trainsetiters)
-    # load validation data
-    #validloader = create_valid_dataloaders(args.patchsizevalid, args.batchsizevalid)
-    # start training (in experiment_utilities)
-    trainloop(experiment, trainloader, Preprocessing(), log_data=True, validloader=None)
-    #trainloop(experiment, trainloader, Preprocessing(), log_data=True, validloader=validloader)
-    
+        assert (args.exp_name is not None)
+        experiment = Experiment(exp_basedir, args.exp_name)
+        experiment.setup(use_gpu=args.use_gpu)
+        load_checkpoint(experiment, args.eval_epoch)
+        outdir = os.path.join(experiment.expdir, "results%03d" % args.eval_epoch)
+        test_list(experiment, outdir, list_testfiles, pad=18)
+
+    else:
+        from dataloader import PreprocessingInt as Preprocessing
+        from dataloader import create_train_realsar_dataloaders as create_train_dataloaders
+        from dataloader import create_valid_realsar_dataloaders as create_valid_dataloaders
+        from experiment_utility import trainloop    
+
+        # initialize experiment object
+        experiment = Experiment(exp_basedir, args.exp_name)
+        # setup Experiment (summaryWriter, model, loss function, optimizer, ...)
+        experiment.setup(args, use_gpu=args.use_gpu)
+        # load training data
+        trainloader = create_train_dataloaders(patchsize, args.batchsize, args.trainsetiters)
+        # load validation data
+        #validloader = create_valid_dataloaders(args.patchsizevalid, args.batchsizevalid)
+        # start training (in experiment_utilities)
+        trainloop(experiment, trainloader, Preprocessing(), log_data=False, validloader=None)
+        #trainloop(experiment, trainloader, Preprocessing(), log_data=True, validloader=validloader)
+        
     '''
     # if weights are available
     if args.weights:
@@ -245,16 +258,16 @@ if __name__ == '__main__':
     parser.add_argument("--adam.beta2", type=float, default=0.999)
     parser.add_argument("--adam.eps", type=float, default=1e-8)
     parser.add_argument("--adam.weightdecay", type=float, default=1e-4)
-    parser.add_argument('--adam.lr', type=float, default=0.01) #default=0.001)
+    parser.add_argument('--adam.lr', type=float, default=0.001) #default=0.001)
     # parameters for SGD
     parser.add_argument("--sgd.momentum", type=float, default=0.9)
     parser.add_argument("--sgd.weightdecay", type=float, default=1e-4)
     parser.add_argument('--sgd.lr', type=float, default=0.001)
 
     # Eval mode
-    parser.add_argument('--eval', action='store_false')
+    parser.add_argument('--eval', default=False) #action='store_false')
     parser.add_argument('--weights', action='store_false')
-    parser.add_argument('--eval_epoch', type=int)
+    parser.add_argument('--eval_epoch', type=int, default=50)
 
     # Training options
     parser.add_argument("--batchsize", type=int, default=32) #default=16) for home machine
@@ -264,7 +277,7 @@ if __name__ == '__main__':
 
     # Misc
     utils.add_commandline_flag(parser, "--use_gpu", "--use_cpu", True)
-    parser.add_argument("--exp_name", default=None)
+    parser.add_argument("--exp_name", default=None) # default=None)
 
     # base dir: home machine
     #base_expdir = "/home/niklas/Documents/experiment_runs"
@@ -277,3 +290,7 @@ if __name__ == '__main__':
     parser.add_argument("--trainsetiters", type=int, default=100)# default=640)
     args = parser.parse_args()
     main_sar(args)
+
+# execute on command line to access tensorboard interface
+# change exp000% each time 
+# tensorboard --logdir=/home/niklas/Documents/cnnNLM_Experiment/exp0000/train/

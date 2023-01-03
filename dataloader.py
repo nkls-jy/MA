@@ -3,9 +3,6 @@ from dataset import sar_dataset
 from torchvision.transforms import Compose
 import torchvision
 
-# maybe not needed?
-#scale_img = 255.0
-
 # paths
 #train_path = ".\\sets\\train\\"
 #valid_path = ".\\sets\\valid\\"
@@ -26,8 +23,8 @@ def create_train_realsar_dataloaders(patchsize, batchsize, trainsetiters):
 
     trainset = sar_dataset.PlainSarFolder(dirs=train_path, transform=transform_train, cache=True)
     trainset = torch.utils.data.ConcatDataset([trainset]*trainsetiters)
-    print(f'trainset length: {len(trainset)}')
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batchsize, shuffle=True, num_workers=20) # 1 just for testing, usually 20)
+    #print(f'trainset length: {len(trainset)}')
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batchsize, shuffle=True, num_workers=12) # 1 just for testing, usually 20)
 
     return trainloader
 
@@ -38,10 +35,31 @@ def create_valid_realsar_dataloaders(patchsize, batchsize):
     ])
 
     validset = sar_dataset.PlainSarFolder(dirs=valid_path, transform=transform_valid, cache=True)
-    validloader = torch.utils.data.DataLoader(validset, batch_size=batchsize, shuffle=False, num_workers=1)
+    validloader = torch.utils.data.DataLoader(validset, batch_size=batchsize, shuffle=False, num_workers=12)
 
     return validloader
 
+class PreprocessingInt:
+    def __call__(self, batch):
+        #print(f'preprocessing input: {batch.shape}')
+        
+        tl = torch.split(batch, 1, dim=1)
+        noisy = tl[0]
+        target = tl[1]
+
+        #print(f'noisy shape: {noisy.shape}')
+        #print(f'taget shape: {target.shape}')
+        #noisy = images[:, :0, :, :]
+        #target = images[:, 1:, :, :]
+        
+        if batch.is_cuda:
+            noisy = noisy.cuda()
+            target = target.cuda()
+        
+        # returns 2 tensors with all noisy/target images from batch
+        return noisy, target
+
+'''
 class PreprocessingIntNoiseToLogBatch:
     def __init__(self):
         from torch.distributions.gamma import Gamma
@@ -70,7 +88,9 @@ class PreprocessingIntNoiseToLogBatch:
         
         # returns 2 tensors with all noisy/target images from batch
         return noisy, target
+'''
 
+'''
 if __name__ == '__main__':
     #data_iterator = create_valid_realsar_dataloaders(256, 8)
     data_loader = create_train_realsar_dataloaders(104, 5, 1)
@@ -125,5 +145,5 @@ if __name__ == '__main__':
 
     #show_images(noise_list)
     show_images(cmb_list)
-    
+'''
     

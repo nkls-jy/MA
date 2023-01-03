@@ -76,6 +76,7 @@ def train_epoch(experiment, trainloader, data_preprocessing, log_data):
     stats_num = {"loss": 0, "mse": 0, "psnr": 0, "ssim": 0}
     stats_cum = {"loss": 0, "mse": 0, "psnr": 0, "ssim": 0}
 
+    print(f"####################\nTraining starts\n#################")
     for inputs in tqdm(trainloader):
         if experiment.use_cuda:
             # transfers inputs from tensor to GPU
@@ -276,7 +277,7 @@ def test_list(experiment, outdir, listfile, pad=0):
     #stats_num = {"mse": 0.0, "psnr": 0.0, "ssim": 0.0}
     #stats_cum = {"mse": 0, "psnr": 0, "ssim": 0}
     vetTIME = list()
-    print(f"tesetfiles: {listfile}")
+    print(f"testfiles: {listfile}")
     
     with torch.no_grad():
         for filename in listfile:
@@ -287,7 +288,7 @@ def test_list(experiment, outdir, listfile, pad=0):
 
                 outending = filename.rsplit('/', 1)[1]
 
-            output_filename = eval_file & outending
+            output_filename = eval_file % outending
 
             print(f"img shape: {img.shape}")
 
