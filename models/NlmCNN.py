@@ -103,14 +103,18 @@ class N3BackNet(nn.Module):
         # create layers 
         # 1-5: conv
         # 6: conv + skip
-        self.convs1 = self.createconvs(nplanes_in, 8, depth=6, lastact='relu', bn_momentum=bn_momentum, padding=padding)
+        #self.convs1 = self.createconvs(nplanes_in, 8, depth=6, lastact='relu', bn_momentum=bn_momentum, padding=padding)
+        self.convs1 = self.createconvs(nplanes_in, 14, depth=6, lastact='relu', bn_momentum=bn_momentum, padding=padding)
         # 7: N³ block
-        self.n3block1 = N3Block(8, 8, **n3block_opt)
+        #self.n3block1 = N3Block(8, 8, **n3block_opt)
+        self.n3block1 = N3Block(14, 14, **n3block_opt)
         # 8-12: conv
         # 13: conv + skip
-        self.convs2 = self.createconvs(self.n3block1.nplanes_out, 8, depth=6, lastact='relu', bn_momentum=bn_momentum, padding=padding)
+        #self.convs2 = self.createconvs(self.n3block1.nplanes_out, 8, depth=6, lastact='relu', bn_momentum=bn_momentum, padding=padding)
+        self.convs2 = self.createconvs(self.n3block1.nplanes_out, 14, depth=6, lastact='relu', bn_momentum=bn_momentum, padding=padding)
         # 14: N³ block
-        self.n3block2 = N3Block(8, 8, **n3block_opt)
+        #self.n3block2 = N3Block(8, 8, **n3block_opt)
+        self.n3block2 = N3Block(14, 14, **n3block_opt)
         # 15-19: conv
         # 20: conv (with softmax)
         self.convs3 = self.createconvs(self.n3block2.nplanes_out, sizearea*sizearea, depth=6, lastact='softmax', bn_momentum=bn_momentum, padding=padding)
