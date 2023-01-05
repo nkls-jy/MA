@@ -265,7 +265,7 @@ if __name__ == '__main__':
     parser.add_argument('--sgd.lr', type=float, default=0.001)
 
     # Eval mode
-    parser.add_argument('--eval', default=True) #action='store_false')
+    parser.add_argument('--eval', default=False) #action='store_false')
     parser.add_argument('--weights', action='store_false')
     parser.add_argument('--eval_epoch', type=int, default=50)
 
@@ -277,7 +277,7 @@ if __name__ == '__main__':
 
     # Misc
     utils.add_commandline_flag(parser, "--use_gpu", "--use_cpu", True)
-    parser.add_argument("--exp_name", default='exp0001') # default=None)
+    parser.add_argument("--exp_name", default=None) # default=None)
 
     # base dir: home machine
     #base_expdir = "/home/niklas/Documents/experiment_runs"

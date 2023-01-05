@@ -111,7 +111,7 @@ def add_commandline_n3params(parser, name, k=7, external_temp=True):
 
     #add_commandline_networkparams(parser, "%s.embedcnn" % name, 64, 3, 3, "relu", True) # Specification of embedding CNNs: features, depth, kernelsize, activation, batchnorm
     add_commandline_networkparams(parser, "%s.embedcnn" %name, 64, 3, 5, "relu", True)
-    parser.add_argument("--%s.embedcnn.nplanes_out" % name, type=int, default=8)  # output channels of embedding CNNs
+    parser.add_argument("--%s.embedcnn.nplanes_out" % name, type=int, default=14) #default=8)  # output channels of embedding CNNs
     add_commandline_flag(parser, "--%s.nl_temp.external_temp"% name, "--%s.nl_temp.no_external_temp"% name, default=external_temp) # whether to have separate temperature CNN
     parser.add_argument("--%s.nl_temp.temp_bias"%name, type=float, default=0.1) # constant bias of temperature
     add_commandline_flag(parser, "--%s.nl_temp.distance_bn"%name, "--%s.nl_temp.no_distance_bn"%name, default=True) # whether to have batch norm layer after calculat of pairwise distances
