@@ -249,7 +249,10 @@ if __name__ == '__main__':
     # size of prediction areas
     parser.add_argument("--sizearea", type=int, default=25)
     # add command line params for N³ block
-    add_commandline_n3params(parser, "n3block", k=7, external_temp=True)
+    #add_commandline_n3params(parser, "n3block", k=7, external_temp=True)
+    #add_commandline_n3params(parser, "n3block", k=3, external_temp=True)
+    #add_commandline_n3params(parser, "n3block", k=15, external_temp=True)
+    add_commandline_n3params(parser, "n3block", k=7, external_temp=False)
 
     # Optimizer
     parser.add_argument('--optimizer', default="adam", choices=["adam", "sgd"])  # which optimizer to use
@@ -265,7 +268,7 @@ if __name__ == '__main__':
     parser.add_argument('--sgd.lr', type=float, default=0.001)
 
     # Eval mode
-    parser.add_argument('--eval', default=False) #action='store_false')
+    parser.add_argument('--eval', default=True) #action='store_false')
     parser.add_argument('--weights', action='store_false')
     parser.add_argument('--eval_epoch', type=int, default=50)
 
@@ -277,7 +280,7 @@ if __name__ == '__main__':
 
     # Misc
     utils.add_commandline_flag(parser, "--use_gpu", "--use_cpu", True)
-    parser.add_argument("--exp_name", default=None) # default=None)
+    parser.add_argument("--exp_name", default='exp0005') # default=None)
 
     # base dir: home machine
     #base_expdir = "/home/niklas/Documents/experiment_runs"
@@ -287,7 +290,7 @@ if __name__ == '__main__':
 
     #base_expdir = ".\\sets\\train\\"
     parser.add_argument("--exp_basedir", default=base_expdir)
-    parser.add_argument("--trainsetiters", type=int, default=100)# default=640)
+    parser.add_argument("--trainsetiters", type=int, default=50)# default=640)
     args = parser.parse_args()
     main_sar(args)
 
