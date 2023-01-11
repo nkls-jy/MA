@@ -282,6 +282,7 @@ def test_list(experiment, outdir, listfile, pad=0):
     with torch.no_grad():
         for filename in listfile:
             with rasterio.open(filename) as f:
+                # reads 2-band input (noisy, target)
                 img = f.read()
                 # args for output
                 kwargs = f.meta
@@ -292,11 +293,11 @@ def test_list(experiment, outdir, listfile, pad=0):
 
             print(f"img shape: {img.shape}")
 
-            noisy_int = img
+            noisy_int = img[0]
+            noisy_int = torch.from_numpy(noisy_int)[None, :, :]
+            target = img[1]
 
             timestamp = time.time()
-
-            noisy_int = torch.from_numpy(noisy_int)[None, :, :]
 
             if use_cuda:
                 noisy_int = noisy_int.cuda()
@@ -307,6 +308,7 @@ def test_list(experiment, outdir, listfile, pad=0):
             pred = net(noisy)
 
             pred_int = experiment.postprocessing_net2int(pred)[0, 0, :, :]
+            
             if use_cuda:
                 pred_int = pred_int.cpu()
             vetTIME.append(time.time()-timestamp)
@@ -314,6 +316,8 @@ def test_list(experiment, outdir, listfile, pad=0):
             # create two band output array 
             pred_img = pred_int.numpy()[np.newaxis, :, :]
             img = np.squeeze(img)[np.newaxis, :, :]
+            target = np.squeeze(target)[np.newaxis, :, :]
+
             print(f"pred shape: {pred_img.shape}")
             print(f"orig. shape: {img.shape}")
 
@@ -331,13 +335,13 @@ def test_list(experiment, outdir, listfile, pad=0):
             
             print(f"row & col values now: {pred_img.shape}")
         
-            outfile = np.append(pred_img, img, axis=0)
+            outfile = np.append(pred_img, img, target, axis=0)
             print(f"outfile shape: {outfile.shape}")
 
             # write output file (TIFF)
             kwargs.update(
                 dtype=rasterio.float32,
-                count=2,
+                count=3,
                 compress='lzw')
 
             with rasterio.open(output_filename, 'w', **kwargs) as dst:
